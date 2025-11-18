@@ -12,7 +12,7 @@ def solve_hierarchical_pb(layers,
     layers: list[list[str]]
         layers[i] is the list of projects in layer i (0-indexed from top to bottom)
     hierarchy : dict[str, str]
-        project group -> subgroups in next layer (None if no subgroups)
+        project group -> subgroups in the next layer (None if no subgroups)
     project_costs : dict[str, int]
         project -> nonnegative integer cost
     approvals : list[set[str]]
