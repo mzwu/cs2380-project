@@ -9,11 +9,11 @@ import shutil
 from typing import List, Dict, Tuple
 from openai import OpenAI
 
-OPENAI_API_KEY = "CHANGE_ME"
+OPENAI_API_KEY = ""
 
 # File paths (UPDATE TO YOUR FILE PATHS)
-INPUT_FILE = "data/poland_warszawa_2021_.pb"
-BACKUP_FILE = "data/poland_warszawa_2021_.pb.backup"
+INPUT_FILE = "data/poland_warszawa_2026_marysin-wawerski-anin.pb"
+BACKUP_FILE = "data/poland_warszawa_2026_marysin-wawerski-anin.pb.backup"
 
 
 def extract_categories_from_file(file_path: str) -> set:
