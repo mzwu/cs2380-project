@@ -8,8 +8,8 @@ import json
 from collections import defaultdict
 from typing import Dict, List, Set
 
-INPUT_FILE = "data/poland_warszawa_2021_.pb"
-OUTPUT_FILE = "data/poland_warszawa_2021_.json"
+INPUT_FILE = "poland_warszawa_2026_marysin-wawerski-anin.pb"
+OUTPUT_FILE = "poland_warszawa_2026_marysin-wawerski-anin.json"
 
 
 def parse_pb_file(file_path: str) -> tuple[Dict[str, int], Dict[str, Set[str]], List[Set[str]]]:
