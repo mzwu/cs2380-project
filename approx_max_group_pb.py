@@ -1,7 +1,8 @@
 from collections import defaultdict
 import math
+import json
 
-def max_group_pb(project_costs,
+def approx_max_group_pb(project_costs,
                  approvals,
                  groups,
                  global_budget,
@@ -33,6 +34,8 @@ def max_group_pb(project_costs,
     meta : dict
         Extra info (e.g. total cost used)
     """
+    print("----- STARTING approx_max_group_pb -----")
+
     # Setup and sanity checks
     P = set(project_costs.keys())
     G = list(groups.keys())
@@ -59,6 +62,7 @@ def max_group_pb(project_costs,
         return set(), 0, {"note": "No project has positive utility."}
 
     # Type R of each project (subset of groups it belongs to)
+    print("----- COMPUTING PROJECT TYPES -----")
     proj_groups = {p: frozenset({F for F in G if p in groups[F]}) for p in P}
     type_to_projects = defaultdict(list)
     for p in P:
@@ -98,6 +102,7 @@ def max_group_pb(project_costs,
                 bundles[v] = (dp_cost[v], chosen)
         return bundles
 
+    print("----- MIN COST BUNDLES -----")
     type_options_exact = {R: min_cost_bundles_for_type(R) for R in types}
     # Make sure each type has 0 cost 0 utility option
     for R in types:
@@ -112,6 +117,7 @@ def max_group_pb(project_costs,
             return 0
         return int(math.floor(math.log(u) / math.log(1.0 + epsilon)))
 
+    print("----- BUCKETING -----")
     type_options_bucketed = {}
     for R in types:
         best_for_bucket = {}  # k -> (cost, bundle, original_u)
@@ -195,6 +201,7 @@ def max_group_pb(project_costs,
 
             del choices[R]
 
+    print("----- DFS TO GET BEST BUNDLE -----")
     start_group_costs = {F: 0 for F in gset}
     dfs(0, 0, start_group_costs, 0, 0, set(), {})
 
@@ -208,27 +215,28 @@ def max_group_pb(project_costs,
 
 
 if __name__ == "__main__":
-    # Projects and costs
-    project_costs = {
-        "p1": 2, "p2": 1, "p3": 3, "p4": 1
-    }
+    with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
+        data = json.load(f)
 
-    # 2 voters' project approvals
-    approvals = [
-        {"p1", "p2", "p3"},
-        {"p3", "p4"}
-    ]
+        # Access data
+        project_costs = data["project_costs"]
+        approvals = [set(a) for a in data["approvals"]]
+        groups = {k: set(v) for k, v in data["groups"].items()}
 
-    # 2 subgroups F1 and F2
-    groups = {
-        "F1": {"p1", "p3"},
-        "F2": {"p2", "p4"}
-    }
-
-    group_budgets = {"F1": 3, "F2": 2}
+    group_budgets = {group: 725604 // len(groups) for group in groups}
     B = sum([group_budgets[F] for F in groups])
 
-    chosen, util, meta = max_group_pb(project_costs, approvals, groups, B, group_budgets, epsilon=0.10)
+    chosen, util, meta = approx_max_group_pb(project_costs, approvals, groups, B, group_budgets, epsilon=0.10)
     print("Chosen projects:", chosen)
     print("Utility:", util)
     print("Total cost used:", meta["total_cost"])
+
+    data = {
+        "chosen_projects": list(chosen),
+        "utility": util,
+        "total_cost": meta["total_cost"]
+    }
+
+    # Save to a JSON file
+    with open("data/max_group_pb_result.json", "w") as file:
+        json.dump(data, file, indent=4)
