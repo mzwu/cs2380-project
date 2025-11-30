@@ -2,12 +2,13 @@ from collections import defaultdict
 import math
 import json
 
+
 def approx_max_group_pb(project_costs,
-                 approvals,
-                 groups,
-                 global_budget,
-                 group_budgets,
-                 epsilon=0.10):
+                        approvals,
+                        groups,
+                        global_budget,
+                        group_budgets,
+                        epsilon=0.10):
     """
     (1+epsilon)-approximation for Max-Group-PB (Theorem 26)
     Inputs
@@ -74,7 +75,8 @@ def approx_max_group_pb(project_costs,
 
     # For each type R, compute min-cost for exact utility v and store bundle (DP)
     def min_cost_bundles_for_type(R):
-        items = [(p, project_costs[p], approval_score[p]) for p in type_to_projects[R]]
+        items = [(p, project_costs[p], approval_score[p])
+                 for p in type_to_projects[R]]
         INF = 10**18
         dp_cost = [INF] * (A_total + 1)
         dp_prev = [None] * (A_total + 1)
@@ -88,7 +90,8 @@ def approx_max_group_pb(project_costs,
                 nc = dp_cost[v] + c
                 if nc < dp_cost[nv]:
                     dp_cost[nv] = nc  # minimum cost to reach total utility v
-                    dp_prev[nv] = (v, p)  # to get utility nv, we came from utility v by adding project p
+                    # to get utility nv, we came from utility v by adding project p
+                    dp_prev[nv] = (v, p)
 
         bundles = {0: (0, set())}  # utility v -> (min_cost, bundle_set)
         for v in range(1, A_total + 1):
@@ -129,7 +132,8 @@ def approx_max_group_pb(project_costs,
                 best_for_bucket[k] = (cost, bundle, u)
 
         # Build option list for this type: (bucket_k, cost, bundle, original_u)
-        opts = [(k, cost, bundle, u) for k, (cost, bundle, u) in best_for_bucket.items()]
+        opts = [(k, cost, bundle, u)
+                for k, (cost, bundle, u) in best_for_bucket.items()]
         # Ensure a zero option remains
         if 0 not in best_for_bucket:
             opts.append((0, 0, set(), 0))
@@ -167,7 +171,8 @@ def approx_max_group_pb(project_costs,
         # Compare to best_solution, choose higher utility (tie-break by lower cost)
         if i == len(types_sorted):
             if actual_util > best_solution["utility"] or (
-                actual_util == best_solution["utility"] and (best_solution["cost"] is None or used_cost < best_solution["cost"])
+                actual_util == best_solution["utility"] and (
+                    best_solution["cost"] is None or used_cost < best_solution["cost"])
             ):
                 best_solution = {
                     "utility": actual_util,
@@ -197,7 +202,8 @@ def approx_max_group_pb(project_costs,
             n_chosen_projects = chosen_projects | bundle
             choices[R] = (b_k, cost, set(bundle), orig_u)
 
-            dfs(i + 1, n_used_costs := n_used_cost, n_used_group_costs, n_bucket_util, n_actual_util, n_chosen_projects, choices)
+            dfs(i + 1, n_used_costs := n_used_cost, n_used_group_costs,
+                n_bucket_util, n_actual_util, n_chosen_projects, choices)
 
             del choices[R]
 
@@ -213,7 +219,6 @@ def approx_max_group_pb(project_costs,
     }
 
 
-
 if __name__ == "__main__":
     with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
         data = json.load(f)
@@ -223,10 +228,29 @@ if __name__ == "__main__":
         approvals = [set(a) for a in data["approvals"]]
         groups = {k: set(v) for k, v in data["groups"].items()}
 
-    group_budgets = {group: 725604 // len(groups) for group in groups}
+    # Calculate total cost of projects in each group
+    total_budget = 725604
+    group_costs = {}
+    for group, group_projects in groups.items():
+        group_costs[group] = sum(int(project_costs[p])
+                                 for p in group_projects if p in project_costs)
+
+    total_cost = sum(group_costs.values())
+
+    # Set each group's budget proportional to project costs, with 20% buffer
+    group_budgets = {}
+    for group in groups:
+        if total_cost > 0:
+            proportion = group_costs[group] / total_cost
+            group_budgets[group] = int(
+                total_budget * proportion * 1.2)  # 20% buffer
+        else:
+            group_budgets[group] = total_budget // len(groups)
+
     B = sum([group_budgets[F] for F in groups])
 
-    chosen, util, meta = approx_max_group_pb(project_costs, approvals, groups, B, group_budgets, epsilon=0.10)
+    chosen, util, meta = approx_max_group_pb(
+        project_costs, approvals, groups, B, group_budgets, epsilon=0.10)
     print("Chosen projects:", chosen)
     print("Utility:", util)
     print("Total cost used:", meta["total_cost"])

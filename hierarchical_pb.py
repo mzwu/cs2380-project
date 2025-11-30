@@ -122,15 +122,24 @@ def solve_hierarchical_pb(layers,
 
 # Test case
 if __name__ == "__main__":
-    # Layers and hierarchy should be written using groups, not projects
-    layers = [['Group1'], ['Group2', 'Group3']]
-    hierarchy = {'Group1': ['Group2', 'Group3'], 'Group2': [], 'Group3': []}
-    project_costs = {'A': 3, 'B': 3, 'C': 2, 'D': 4}
-    approvals = [{'A', 'C'}, {'B', 'D'}, {'A', 'B', 'C'}, {'B'}]
-    groups = {'Group1': {'A', 'B', 'C', 'D'}, 'Group2': {'C', 'D'}, 'Group3': {'A', 'B'}}
-    global_budget = 10
-    group_budgets = {'Group1': 10, 'Group2': 7, 'Group3': 3}
-
+    import json
+    
+    # Load region assignments (layers, hierarchy, groups, group_budgets)
+    with open("data/region_assignments.json", "r") as f:
+        region_data = json.load(f)
+    
+    # Load Warsaw PB data (project_costs, approvals)
+    with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
+        pb_data = json.load(f)
+    
+    # Extract and convert data to expected formats
+    layers = region_data["layers"]
+    hierarchy = region_data["hierarchy"]
+    project_costs = {k: int(v) for k, v in pb_data["project_costs"].items()}
+    approvals = [set(a) for a in pb_data["approvals"]]
+    groups = {k: set(v) for k, v in region_data["groups"].items()}
+    global_budget = region_data["group_budgets"]["All"]
+    group_budgets = region_data["group_budgets"]
     chosen_projects, utility, meta = solve_hierarchical_pb(
         layers,
         hierarchy,
@@ -140,7 +149,16 @@ if __name__ == "__main__":
         global_budget,
         group_budgets
     )
-
-    print("Chosen Projects:", chosen_projects)
-    print("Total Utility:", utility)
-    print("Meta Info:", meta)
+    print(f"Chosen Projects: {chosen_projects}")
+    print(f"Total Utility: {utility}")
+    print(f"Meta Info: {meta}")
+    
+    # Save results to JSON
+    result = {
+        "chosen_projects": list(chosen_projects),
+        "utility": utility,
+        "total_cost": meta["total cost"]
+    }
+    
+    with open("data/hierarchical_pb_result.json", "w") as f:
+        json.dump(result, f, indent=4)
