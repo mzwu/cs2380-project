@@ -8,8 +8,8 @@ import json
 from collections import defaultdict
 from typing import Dict, List, Set
 
-INPUT_FILE = "poland_warszawa_2026_marysin-wawerski-anin.pb"
-OUTPUT_FILE = "poland_warszawa_2026_marysin-wawerski-anin.json"
+INPUT_FILE = "poland_warszawa_2023_wesola.pb"
+OUTPUT_FILE = "poland_warszawa_2023_wesola.json"
 
 
 def parse_pb_file(file_path: str) -> tuple[Dict[str, int], Dict[str, Set[str]], List[Set[str]]]:
@@ -18,66 +18,80 @@ def parse_pb_file(file_path: str) -> tuple[Dict[str, int], Dict[str, Set[str]], 
     - project_costs: dictionary mapping project_id (string) to cost (int)
     - groups: dictionary mapping category (string) to set of project_ids (strings)
     - approvals: list of sets, where each set contains project IDs approved by a voter
+
+    Automatically detects the column layout from the header line.
     """
     project_costs = {}
     groups = defaultdict(set)
     approvals = []
-    
+
     in_projects_section = False
     in_votes_section = False
-    header_line = None
-    
+    header_columns = None
+    category_idx = None
+
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.rstrip('\n\r')
-            
+
             if line == "PROJECTS":
                 in_projects_section = True
                 continue
-            
+
             if line == "VOTES":
                 in_votes_section = True
                 in_projects_section = False
                 continue
-            
+
             if in_projects_section:
                 if line.startswith("project_id"):
-                    header_line = line
+                    # Parse header to find column indices
+                    header_columns = line.split(';')
+                    # Find category column index
+                    if 'category' in header_columns:
+                        category_idx = header_columns.index('category')
+                    print(f"  Header columns: {header_columns}")
+                    print(f"  Category column index: {category_idx}")
                     continue
-                
-                if header_line and line:
+
+                if header_columns and line:
                     reader = csv.reader([line], delimiter=';')
                     parts = next(reader)
-                    
+
                     if parts and parts[0].isdigit():
                         project_id = parts[0]
                         cost = int(parts[1])
-                        category = parts[4] if len(parts) > 4 else ""
-                        
+
+                        # Get category from the detected column index
+                        category = ""
+                        if category_idx is not None and len(parts) > category_idx:
+                            category = parts[category_idx]
+
                         # Add to project_costs
                         project_costs[project_id] = cost
-                        
+
                         # Add to groups by category
                         if category:
                             groups[category].add(project_id)
                         else:
                             groups["uncategorized"].add(project_id)
-            
+
             elif in_votes_section:
                 if line.startswith("voter_id"):
                     continue
-                
+
                 if line:
                     reader = csv.reader([line], delimiter=';')
                     parts = next(reader)
-                    
+
                     if len(parts) >= 2:
                         vote_str = parts[1]
                         if vote_str:
                             # Parse comma-separated project IDs
-                            project_ids = {pid.strip() for pid in vote_str.split(',') if pid.strip()}
+                            project_ids = {
+                                pid.strip() for pid in vote_str.split(',') if pid.strip()}
                             approvals.append(project_ids)
-    
+
     return project_costs, dict(groups), approvals
 
 
@@ -96,32 +110,31 @@ def convert_sets_to_lists(data):
 def main():
     """Main function to convert PB file to JSON."""
     print(f"Reading file: {INPUT_FILE}")
-    
+
     # Parse the file
     project_costs, groups, approvals = parse_pb_file(INPUT_FILE)
-    
+
     print(f"Found {len(project_costs)} projects")
     print(f"Found {len(groups)} categories")
     print(f"Found {len(approvals)} voters")
-    
+
     # Create the output structure
     output_data = {
         "project_costs": project_costs,
         "approvals": approvals,
         "groups": groups
     }
-    
+
     # Convert sets to lists for JSON
     json_data = convert_sets_to_lists(output_data)
-    
+
     # Write to JSON file
     print(f"\nWriting JSON file: {OUTPUT_FILE}")
     with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, indent=2, ensure_ascii=False)
-    
+
     print("Done!")
 
 
 if __name__ == "__main__":
     main()
-

@@ -122,7 +122,7 @@ def equal_shares_fixed_budget(voters, projects, cost, approvers, total_budget):
     return winners
 
 if __name__ == "__main__":
-    with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
+    with open("data/poland_warszawa_2023_wesola.json", "r") as f:
         data = json.load(f)
 
         # Access data
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     for i, a in enumerate(approvals):
         for p in a:
             approvers[p].append(f"v{i}")
-    total_budget = 725604
+    total_budget = 1011308
 
     # get chosen projects
     winners = equal_shares(voters, projects, cost, approvers, total_budget)
@@ -159,5 +159,5 @@ if __name__ == "__main__":
     }
 
     # Save to a JSON file
-    with open("data/equal_shares_result.json", "w") as file:
+    with open("data/equal_shares_result_wesola.json", "w") as file:
         json.dump(data, file, indent=4)

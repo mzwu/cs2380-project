@@ -1,0 +1,46 @@
+{
+  "total_budget": 1011308,
+  "num_voters": 1181,
+  "num_projects": 29,
+  "results": [
+    {
+      "method": "Hierarchical PB",
+      "num_projects": 22,
+      "utility": 7054,
+      "used_budget": 975590,
+      "unused_budget": 35718,
+      "unused_percentage": 3.531861707808106,
+      "ejr_violations": 0,
+      "ejr_formal_violations": 0,
+      "ejr_simple_violations": 0,
+      "violation_details": [],
+      "simple_violation_details": []
+    },
+    {
+      "method": "Approx Max Group PB",
+      "num_projects": 21,
+      "utility": 6657,
+      "used_budget": 929840,
+      "unused_budget": 81468,
+      "unused_percentage": 8.05570607569603,
+      "ejr_violations": 0,
+      "ejr_formal_violations": 0,
+      "ejr_simple_violations": 0,
+      "violation_details": [],
+      "simple_violation_details": []
+    },
+    {
+      "method": "Method of Equal Shares",
+      "num_projects": 21,
+      "utility": 7163,
+      "used_budget": 963700,
+      "unused_budget": 47608,
+      "unused_percentage": 4.707566834238432,
+      "ejr_violations": 0,
+      "ejr_formal_violations": 0,
+      "ejr_simple_violations": 0,
+      "violation_details": [],
+      "simple_violation_details": []
+    }
+  ]
+}

@@ -16,20 +16,20 @@ import numpy as np
 def load_data():
     """Load PB data and results from all three methods."""
     # Load input data
-    with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
+    with open("data/poland_warszawa_2023_wesola.json", "r") as f:
         pb_data = json.load(f)
 
-    with open("data/region_assignments.json", "r") as f:
+    with open("data/region_assignments_wesola.json", "r") as f:
         region_data = json.load(f)
 
     # Load results
-    with open("data/hierarchical_pb_result.json", "r") as f:
+    with open("data/hierarchical_pb_result_wesola.json", "r") as f:
         hierarchical_result = json.load(f)
 
-    with open("data/max_group_pb_result.json", "r") as f:
+    with open("data/max_group_pb_result_wesola.json", "r") as f:
         max_group_result = json.load(f)
 
-    with open("data/equal_shares_result.json", "r") as f:
+    with open("data/equal_shares_result_wesola.json", "r") as f:
         equal_shares_result = json.load(f)
 
     return pb_data, region_data, hierarchical_result, max_group_result, equal_shares_result
@@ -373,10 +373,10 @@ def main():
         "results": results
     }
 
-    with open("data/analysis_results.json", "w") as f:
+    with open("data/analysis_results_wesola.json", "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"\n\nDetailed results saved to data/analysis_results.json")
+    print(f"\n\nDetailed results saved to data/analysis_results_wesola.json")
 
     # Generate graphs
     generate_graphs(results, total_budget)
@@ -413,10 +413,10 @@ def generate_graphs(results, total_budget):
     bars1[best_utility_idx].set_linewidth(3)
 
     plt.tight_layout()
-    plt.savefig('data/graph_01_total_utility.png', dpi=150, bbox_inches='tight',
+    plt.savefig('data/graph_01_total_utility_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
-    print("📊 Saved: graph_01_total_utility.png")
+    print("📊 Saved: graph_01_total_utility_wesola.png")
 
     # 2. Budget Usage Stacked Bar Chart
     fig2, ax2 = plt.subplots(figsize=(9, 6))
@@ -446,10 +446,10 @@ def generate_graphs(results, total_budget):
                  ha='center', va='bottom', fontsize=11, color='#c0392b', fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('data/graph_02_budget_usage.png', dpi=150, bbox_inches='tight',
+    plt.savefig('data/graph_02_budget_usage_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
-    print("📊 Saved: graph_02_budget_usage.png")
+    print("📊 Saved: graph_02_budget_usage_wesola.png")
 
     # 3. Unused Budget Comparison
     fig3, ax3 = plt.subplots(figsize=(9, 6))
@@ -472,10 +472,10 @@ def generate_graphs(results, total_budget):
     bars3[best_efficiency_idx].set_linewidth(3)
 
     plt.tight_layout()
-    plt.savefig('data/graph_03_budget_efficiency.png', dpi=150, bbox_inches='tight',
+    plt.savefig('data/graph_03_budget_efficiency_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
-    print("📊 Saved: graph_03_budget_efficiency.png")
+    print("📊 Saved: graph_03_budget_efficiency_wesola.png")
 
     # 4. Projects Funded & EJR Status
     fig4, ax4 = plt.subplots(figsize=(9, 6))
@@ -513,10 +513,10 @@ def generate_graphs(results, total_budget):
                      fontsize=12, color='#27ae60', fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('data/graph_04_projects_ejr.png', dpi=150, bbox_inches='tight',
+    plt.savefig('data/graph_04_projects_ejr_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
-    print("📊 Saved: graph_04_projects_ejr.png")
+    print("📊 Saved: graph_04_projects_ejr_wesola.png")
 
     # Create a summary radar chart
     create_radar_chart(results)
@@ -574,10 +574,10 @@ def create_radar_chart(results):
         1.25, 1.15), fontsize=11, framealpha=0.9)
 
     plt.tight_layout()
-    plt.savefig('data/graph_05_radar_chart.png', dpi=150, bbox_inches='tight',
+    plt.savefig('data/graph_05_radar_chart_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
-    print("📊 Saved: graph_05_radar_chart.png")
+    print("📊 Saved: graph_05_radar_chart_wesola.png")
 
 
 if __name__ == "__main__":

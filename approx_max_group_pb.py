@@ -220,7 +220,7 @@ def approx_max_group_pb(project_costs,
 
 
 if __name__ == "__main__":
-    with open("data/poland_warszawa_2026_marysin-wawerski-anin.json", "r") as f:
+    with open("data/poland_warszawa_2023_wesola.json", "r") as f:
         data = json.load(f)
 
         # Access data
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         groups = {k: set(v) for k, v in data["groups"].items()}
 
     # Calculate total cost of projects in each group
-    total_budget = 725604
+    total_budget = 1011308
     group_costs = {}
     for group, group_projects in groups.items():
         group_costs[group] = sum(int(project_costs[p])
@@ -262,5 +262,5 @@ if __name__ == "__main__":
     }
 
     # Save to a JSON file
-    with open("data/max_group_pb_result.json", "w") as file:
+    with open("data/max_group_pb_result_wesola.json", "w") as file:
         json.dump(data, file, indent=4)
