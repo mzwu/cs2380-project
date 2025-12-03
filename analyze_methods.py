@@ -16,20 +16,20 @@ import numpy as np
 def load_data():
     """Load PB data and results from all three methods."""
     # Load input data
-    with open("data/poland_warszawa_2023_wesola.json", "r") as f:
+    with open("results/poland_warszawa_2023_wesola.json", "r") as f:
         pb_data = json.load(f)
 
-    with open("data/region_assignments_wesola.json", "r") as f:
+    with open("results/region_assignments_wesola.json", "r") as f:
         region_data = json.load(f)
 
     # Load results
-    with open("data/hierarchical_pb_result_wesola.json", "r") as f:
+    with open("results/hierarchical_pb_result_wesola.json", "r") as f:
         hierarchical_result = json.load(f)
 
-    with open("data/max_group_pb_result_wesola.json", "r") as f:
+    with open("results/max_group_pb_result_wesola.json", "r") as f:
         max_group_result = json.load(f)
 
-    with open("data/equal_shares_result_wesola.json", "r") as f:
+    with open("results/equal_shares_result_wesola.json", "r") as f:
         equal_shares_result = json.load(f)
 
     return pb_data, region_data, hierarchical_result, max_group_result, equal_shares_result
@@ -373,10 +373,10 @@ def main():
         "results": results
     }
 
-    with open("data/analysis_results_wesola.json", "w") as f:
+    with open("results/analysis_results_wesola.json", "w") as f:
         json.dump(output, f, indent=2)
 
-    print(f"\n\nDetailed results saved to data/analysis_results_wesola.json")
+    print(f"\n\nDetailed results saved to results/analysis_results_wesola.json")
 
     # Generate graphs
     generate_graphs(results, total_budget)
@@ -513,7 +513,7 @@ def generate_graphs(results, total_budget):
                      fontsize=12, color='#27ae60', fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('data/graph_04_projects_ejr_wesola.png', dpi=150, bbox_inches='tight',
+    plt.savefig('results/graph_04_projects_ejr_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
     print("📊 Saved: graph_04_projects_ejr_wesola.png")
@@ -574,7 +574,7 @@ def create_radar_chart(results):
         1.25, 1.15), fontsize=11, framealpha=0.9)
 
     plt.tight_layout()
-    plt.savefig('data/graph_05_radar_chart_wesola.png', dpi=150, bbox_inches='tight',
+    plt.savefig('results/graph_05_radar_chart_wesola.png', dpi=150, bbox_inches='tight',
                 facecolor='white', edgecolor='none')
     plt.close()
     print("📊 Saved: graph_05_radar_chart_wesola.png")

@@ -17,7 +17,7 @@ import os
 from hierarchical_pb import solve_hierarchical_pb
 from approx_max_group_pb import approx_max_group_pb
 
-RESULTS_FILE = "data/budget_allocation_results.json"
+RESULTS_FILE = "results/budget_allocation_results.json"
 
 
 def generate_percentage_allocations(n_groups, increment=20):
@@ -365,8 +365,8 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
         'grid': '#BDBDBD'  # Light gray grid
     }
 
-    # Plot 1: Distribution of budget usage for both methods (stacked vertically)
-    fig, axes = plt.subplots(2, 1, figsize=(10, 12), facecolor=colors['bg'])
+    # Plot 1: Distribution of budget usage for both methods (side by side)
+    fig, axes = plt.subplots(1, 2, figsize=(20, 6), facecolor=colors['bg'])
 
     # Hierarchical budget usage distribution
     ax1 = axes[0]
@@ -417,13 +417,13 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
     plt.suptitle(f'Budget Usage Distribution Across All Allocations\nTotal Budget: {total_budget:,}',
                  fontsize=18, color=colors['text'], fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig('data/graph_budget_allocation_distribution.png',
+    plt.savefig('results/graph_budget_allocation_distribution.png',
                 dpi=150, facecolor=colors['bg'], edgecolor='none', bbox_inches='tight')
     plt.close()
     print("  Saved: graph_budget_allocation_distribution.png")
 
-    # Plot 2: Best and Worst Allocation Breakdown (4 rows, 1 column)
-    fig, axes = plt.subplots(4, 1, figsize=(20, 20), facecolor=colors['bg'])
+    # Plot 2: Best and Worst Allocation Breakdown (1 row, 4 columns)
+    fig, axes = plt.subplots(1, 4, figsize=(24, 7), facecolor=colors['bg'])
 
     region_colors = ['#E53935', '#43A047', '#1E88E5', '#FB8C00']
     cat_colors = plt.cm.tab10(np.linspace(0, 1, len(category_names)))
@@ -527,7 +527,7 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
     plt.suptitle(f'Best vs Worst Budget Allocations (by % Used)',
                  fontsize=22, color=colors['text'], fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig('data/graph_budget_allocation_pies.png',
+    plt.savefig('results/graph_budget_allocation_pies.png',
                 dpi=150, facecolor=colors['bg'], edgecolor='none', bbox_inches='tight')
     plt.close()
     print("  Saved: graph_budget_allocation_pies.png")
@@ -555,8 +555,15 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
     # Equal shares: total_cost=662750, total_budget=725604 -> 91.34%
     equal_shares_cost = 662750
     equal_shares_pct = (equal_shares_cost / total_budget) * 100
-    ax.axhline(y=equal_shares_pct, color='#7B1FA2', linestyle=':', linewidth=2.5,
-               label=f'Method of Equal Shares: {equal_shares_pct:.1f}%')
+    ax.axhline(y=equal_shares_pct, color='#7B1FA2', linestyle=':', linewidth=2.5)
+    
+    # Annotate the line directly (inside the graph, right-aligned)
+    ax.annotate(f'Method of Equal Shares: {equal_shares_pct:.1f}%',
+                xy=(0.98, equal_shares_pct), xycoords=('axes fraction', 'data'),
+                xytext=(0, 5), textcoords='offset points',
+                va='bottom', ha='right', fontsize=10, fontweight='bold',
+                color='#7B1FA2',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8, edgecolor='#7B1FA2'))
 
     # Add value labels on bars
     for bar in bars1:
@@ -579,8 +586,6 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
                  fontsize=14, color=colors['text'], fontweight='bold')
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=11, color=colors['text'])
-    ax.legend(fontsize=10, framealpha=0.9,
-              loc='upper left', bbox_to_anchor=(1.02, 1))
     ax.tick_params(colors=colors['text'])
     for spine in ax.spines.values():
         spine.set_color(colors['text'])
@@ -588,7 +593,7 @@ def create_comparison_plots(h_all, a_all, h_best, h_worst, a_best, a_worst,
     ax.set_ylim(0, 110)  # Up to 110% to leave room for labels
 
     plt.tight_layout()
-    plt.savefig('data/graph_budget_allocation_comparison.png',
+    plt.savefig('results/graph_budget_allocation_comparison.png',
                 dpi=150, facecolor=colors['bg'], edgecolor='none', bbox_inches='tight')
     plt.close()
     print("  Saved: graph_budget_allocation_comparison.png")
